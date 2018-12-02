@@ -1,0 +1,155 @@
+html 
+{
+    overflow-y: scroll;
+}
+
+
+body
+{
+    background: #333F2C url("../media/background.png");
+    background-repeat: repeat-x;
+    font-family: sans-serif;
+    font-size: 16px;
+    text-align: center;
+}
+
+
+a:link, a:hover, a:visited
+{
+    text-decoration: none;
+    color: black;
+}
+
+
+body p
+{
+    color: white;
+    font-size: 60px;
+    font-family: 'KoHo', sans-serif;
+    text-shadow: 2px 0 0 #000, -2px 0 0 #000, 0 2px 0 #000, 0 -2px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+
+#menu p a
+{
+    border: none;
+}
+
+
+#menu a
+{
+    color: black;
+    border: 1px solid black;
+    border-bottom: 3px solid black;
+    font-family: 'KoHo', sans-serif;
+    display: inline-block;
+    min-width: 90px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin: 5px;
+    background-color: #EFFAFF;
+    text-shadow: none;
+}
+
+
+#menu a:hover
+{
+    background-color: #9CAEFF;
+    border: 1px solid #5464ad;
+    border-bottom: 3px solid;
+    text-shadow: 0px 2px 4px #a9b1d6;
+    border-radius: 10px;
+}
+
+
+#menu .current a
+{
+    background-color: #9CAEFF;
+    border-radius: 10px;
+}
+
+
+
+#main
+{
+    font-size: 16px;
+    font-family: 'KoHo', sans-serif;
+    border: 1px solid black;
+    border-radius: 10px;
+    border-bottom: 3px solid black;
+    background-color: #EFFAFF;
+    max-width: 650px;
+    min-height: 600px;
+    margin: 0px auto;
+    margin-top: 5px;
+    margin-bottom: 120px;
+    text-align: center;
+    padding: 25px;
+    text-align: left;
+} 
+#main .home-para{
+    font-size: 16px;
+    text-shadow: none;
+    color: black;
+    text-decoration: none;
+    font-family: 'KoHo', sans-serif;
+    text-align: center;
+    text-align: left;
+}
+
+
+#main a
+{
+    color: #9CAEFF;
+    font-weight: bold;
+}
+
+
+#main img
+{
+    max-width:100%;
+    max-height:100%;
+    margin-left: auto; 
+    margin-right: auto; 
+    display: block;
+}
+
+    header img
+    {
+            max-width:100%;
+            max-height:100%;
+            margin-left: auto; 
+            margin-right: auto; 
+            display: block;
+    }
+
+
+@media screen and (max-width: 735px)
+{
+    #menu a
+    {
+        position: relative;
+        display: block;
+        text-decoration: none;
+        left: 0px;
+    }
+    
+    #menu .current a
+    {
+        text-decoration: none;
+    }
+    header
+    {
+        position: relative;
+        display: block;
+        left: 0px;
+        
+    }
+
+}
