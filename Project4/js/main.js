@@ -30,6 +30,38 @@ let paused = true;
 let gameOverScoreLabel;
 let GravityFactorGD = 0.5;
 
+const keyboard = Object.freeze({
+	SHIFT: 		16,
+	SPACE: 		32,
+	LEFT: 		37, 
+	UP: 		38, 
+	RIGHT: 		39, 
+	DOWN: 		40,
+    D:          68,
+    W:          87,
+    A:          65,
+    S:          83,
+    E:          69,
+    Z:          90,
+    Q:          81,
+    C:          67,
+    K:          75
+});
+const keys = [];
+window.onkeyup = (e) => {
+//	console.log("keyup=" + e.keyCode);
+	keys[e.keyCode] = false;
+	e.preventDefault();
+};
+
+window.onkeydown = (e)=>{
+//	console.log("keydown=" + e.keyCode);
+	keys[e.keyCode] = true;
+	
+	// checking for other keys - ex. 'p' and 'P' for pausing
+	var char = String.fromCharCode(e.keyCode);
+};
+
 function setup() {
 	stage = app.stage;
 	// #1 - Create the `start` scene
@@ -303,6 +335,14 @@ function loadSpriteSheet(){
         textures.push(frame);
     }
     return textures;
+}
+
+function DuckFall() {
+    
+}
+
+function DuckPlatform(){
+    
 }
 
 function createExplosion(x,y,frameWidth,frameHeight){

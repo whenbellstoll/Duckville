@@ -45,3 +45,22 @@ class Duck extends PIXI.Sprite{
     }
 }
 
+class Platform extends PIXI.Graphics{
+    constructor(xpos=0, ypos=0, width=1, height=1)
+    {
+        super();
+        this.drawRect(xpos, ypos, width, length);
+        
+    }
+}
+
+class Wall extends PIXI.Graphics
+{
+   constructor(xpos=0, ypos=0, width=1, height=1)
+    {
+        super();
+        this.drawRect(xpos, ypos, width, length);
+        
+    }
+}
+
