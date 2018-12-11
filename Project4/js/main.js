@@ -30,6 +30,8 @@ let life = 100;
 let levelNum = 1;
 let paused = true;
 let player2fireReady = true;
+let winningPlayer = "";
+let gameOverText;
 
 let directions = ["right", "left", "up", "down"];
 let directionplayer1 = "up";
@@ -195,7 +197,7 @@ function createLabelsAndButtons() {
 
     // 3 - set up `gameOverScene`
     // 3A - make game over text
-    let gameOverText = new PIXI.Text("Game Over!\n      Player X wins!");
+    gameOverText = new PIXI.Text("Game Over!\n      Player X wins!");
     textStyle = new PIXI.TextStyle({
         fill: 0xFFFFFF,
         fontSize: 64,
@@ -216,8 +218,8 @@ function createLabelsAndButtons() {
     playAgainButton.interactive = true;
     playAgainButton.buttonMode = true;
     playAgainButton.on("pointerup", startGame); // startGame is a function reference
-    playAgainButton.on('pointerover', e => e.target.alpha = 0.7); // concise arrow function with no brackets
-    playAgainButton.on('pointerout', e => e.currentTarget.alpha = 1.0); // ditto
+    playAgainButton.on('pointerover', e => e.target.alpha = 0.7); 
+    playAgainButton.on('pointerout', e => e.currentTarget.alpha = 1.0); 
     gameOverScene.addChild(playAgainButton);
 
 }
@@ -241,7 +243,8 @@ function startGame() {
     gameScene.visible = true;
     levelNum = 1;
     score = 0;
-    life = 100;
+    ship.health = 10;
+    player2.health = 10;
 
     ship.x = 300;
     ship.y = 400;
@@ -349,8 +352,16 @@ function gameLoop() {
         }
     player1healthText();
     player2healthText();
-    
-
+    if( player2.health <= 0)
+    {
+        winningPlayer= "Game Over!\n      Player 1 wins!";
+         end();  
+    }
+    if( ship.health <= 0 )
+        {
+           winningPlayer = "Game Over!\n      Player 2 wins!";
+            end();
+        }
     // #6 - Now do some clean up
     //get rid of dead bullets
     bullets = bullets.filter(b=>b.isAlive);
@@ -370,6 +381,7 @@ function end() {
     
     gameOverScene.visible = true;
     gameScene.visible = false;
+    gameOverText.text = winningPlayer;
 }
 
 function fireBullet(e) {
