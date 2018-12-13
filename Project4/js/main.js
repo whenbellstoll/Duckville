@@ -293,25 +293,37 @@ function Player1Move() {
     let ydir = 0;
 
     if (keys[37]) {
-        xdir = -1;
+        xdir = -1.5;
         directionplayer1 = directions[1];
     }
     if (keys[38]) {
-        ydir = -1;
+        ydir = -1.5;
         directionplayer1 = directions[2];
     }
     if (keys[39]) {
-        xdir = 1;
+        xdir = 1.5;
         directionplayer1 = directions[0];
     }
     if (keys[40]) {
-        ydir = 1;
+        ydir = 1.5;
         directionplayer1 = directions[3];
     }
     ship.x += xdir * ship.speed;
     ship.y += ydir * ship.speed;
-    ship.x = clamp(ship.x, 0, sceneWidth);
-    ship.y = clamp(ship.y, 0, sceneHeight);
+    if(ship.x > sceneWidth) {
+        ship.x = 0;
+    }
+    if(ship.y > sceneHeight) {
+        ship.y = 0;
+    }
+    if(ship.x < 0) {
+        ship.x = sceneWidth;
+    }
+    if(ship.y < 0) {
+        ship.y = sceneHeight;
+    }
+    //ship.x = clamp(ship.x, 0, sceneWidth);
+    //ship.y = clamp(ship.y, 0, sceneHeight);
 }
 
 function Player2Move() {
@@ -319,25 +331,37 @@ function Player2Move() {
     let ydir = 0;
 
     if (keys[65]) {
-        xdir = -1;
+        xdir = -1.5;
         directionplayer2 = directions[1]
     }
     if (keys[87]) {
-        ydir = -1;
+        ydir = -1.5;
         directionplayer2 = directions[2]
     }
     if (keys[68]) {
-        xdir = 1;
+        xdir = 1.5;
         directionplayer2 = directions[0]
     }
     if (keys[83]) {
-        ydir = 1;
+        ydir = 1.5;
         directionplayer2 = directions[3]
     }
     player2.x += xdir * player2.speed;
     player2.y += ydir * player2.speed;
-    player2.x = clamp(player2.x, 0, sceneWidth);
-    player2.y = clamp(player2.y, 0, sceneHeight);
+    if(player2.x > sceneWidth) {
+        player2.x = 0;
+    }
+    if(player2.y > sceneHeight) {
+        player2.y = 0;
+    }
+    if(player2.x < 0) {
+        player2.x = sceneWidth;
+    }
+    if(player2.y < 0) {
+        player2.y = sceneHeight;
+    }
+    //player2.x = clamp(player2.x, 0, sceneWidth);
+    //player2.y = clamp(player2.y, 0, sceneHeight);
 }
 
 function gameLoop() {
