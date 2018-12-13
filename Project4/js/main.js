@@ -37,7 +37,7 @@ else
 }
 
 //preload images
-PIXI.loader.add(["images/Spaceship.png", "images/explosions.png", "images/speedUp.png", "images/tripleShot.png"]).on("progress", e => {
+PIXI.loader.add(["images/Spaceship.png", "images/explosions.png", "images/speedUp.png", "images/tripleShot.png", "images/oceanman.png"]).on("progress", e => {
     console.log(`progress=${e.progress}`)
 }).load(setup);
 
@@ -48,6 +48,9 @@ let stage;
 let startScene;
 let gameScene, ship, player2, health1, health2, shootSound, hitSound, fireballSound;
 let gameOverScene;
+
+//background
+let background;
 
 let circles = [];
 let bullets = [];
@@ -82,7 +85,10 @@ function setup() {
     gameOverScene = new PIXI.Container();
     gameOverScene.visible = false;
     stage.addChild(gameOverScene);
-
+    //create background
+    background = new Background(0, 0);
+    gameScene.addChild(background);
+    
     // #4 - Create labels for all 3 scenes
     createLabelsAndButtons();
 
@@ -92,6 +98,9 @@ function setup() {
 
     player2 = new Player(320, 3, 3);
     gameScene.addChild(player2);
+    
+
+    
     // #6 - Load Sounds
     shootSound = new Howl({
         src: ['sounds/shoot.wav']
@@ -161,43 +170,43 @@ window.onkeydown = (e) => {
 
 function createLabelsAndButtons() {
     let buttonStyle = new PIXI.TextStyle({
-        fill: 0xFF0000,
+        fill: 0xC4B702,
         fontSize: 48,
-        fontFamily: "Futura"
+        fontFamily: "Comic Sans MS"
     });
 
     // 1 - set up startScene
     // Make the top start label
-    let startLabel1 = new PIXI.Text("Arena Shooter");
+    let startLabel1 = new PIXI.Text("DuckFight");
     startLabel1.style = new PIXI.TextStyle({
         fill: 0xFFFFFF,
         fontSize: 96,
-        fontFamily: "Futura",
-        stroke: 0xFF0000,
+        fontFamily: "Comic Sans MS",
+        stroke: 0xC4B702,
         strokeThickness: 6
     });
-    startLabel1.x = 50;
-    startLabel1.y = 120;
+    startLabel1.x = 85;
+    startLabel1.y = 100;
     startScene.addChild(startLabel1);
 
     //Make the middle start label
-    let startLabel2 = new PIXI.Text("Made within the hour of presenting");
+    let startLabel2 = new PIXI.Text("In the avian over the sea");
     startLabel2.style = new PIXI.TextStyle({
         fill: 0xFFFFFF,
         fontSize: 32,
-        fontFamily: "Futura",
+        fontFamily: "Comic Sans MS",
         fontStyle: "italic",
-        stroke: 0xFF0000,
+        stroke: 0xC4B702,
         strokeThickness: 6
     });
-    startLabel2.x = 185;
+    startLabel2.x = 127;
     startLabel2.y = 300;
     startScene.addChild(startLabel2);
 
     //Make start game button
-    let startButton = new PIXI.Text("Oh please no");
+    let startButton = new PIXI.Text("Start");
     startButton.style = buttonStyle;
-    startButton.x = 80;
+    startButton.x = 250;
     startButton.y = sceneHeight - 100;
     startButton.interactive = true;
     startButton.buttonMode = true;
@@ -210,8 +219,8 @@ function createLabelsAndButtons() {
     let textStyle = new PIXI.TextStyle({
         fill: 0xFFFFFF,
         fontSize: 18,
-        fontFamily: "Futura",
-        stroke: 0xFF0000,
+        fontFamily: "Comic Sans MS",
+        stroke: 0xC4B702,
         strokeThickness: 4
     });
     health1 = new PIXI.Text("Player 1 Health: ");
@@ -235,7 +244,7 @@ function createLabelsAndButtons() {
         fill: 0xFFFFFF,
         fontSize: 64,
         fontFamily: "Futura",
-        stroke: 0xFF0000,
+        stroke: 0xC4B702,
         strokeThickness: 6
     });
     gameOverText.style = textStyle;
@@ -244,9 +253,9 @@ function createLabelsAndButtons() {
     gameOverScene.addChild(gameOverText);
 
     // 3B - make "play again?" button
-    let playAgainButton = new PIXI.Text("Would you even call this a game?");
+    let playAgainButton = new PIXI.Text("Fight again?");
     playAgainButton.style = buttonStyle;
-    playAgainButton.x = 150;
+    playAgainButton.x = 200;
     playAgainButton.y = sceneHeight - 100;
     playAgainButton.interactive = true;
     playAgainButton.buttonMode = true;
@@ -332,7 +341,7 @@ function Player2Move() {
 
     if (keys[65]) {
         xdir = -1.5;
-        directionplayer2 = directions[1]
+        directionplayer2 = directions[1];
     }
     if (keys[87]) {
         ydir = -1.5;
@@ -429,7 +438,7 @@ function gameLoop() {
         
         player1score += 1;
         localStorage.setItem("Player1Wins", player1score);
-        winningPlayer = "    " + player1score + "-" + player2score + "\n   Player 1 wins!";
+        winningPlayer = "\t \t \t     " + player1score + "-" + player2score + "\n   Player 1 wins!";
         end();
         
     }
@@ -438,12 +447,14 @@ function gameLoop() {
         
         player2score += 1;
         localStorage.setItem("Player2Wins", player2score);
-        winningPlayer = "    " + player1score + "-" + player2score + "\n      Player 2 wins!";
+        winningPlayer =  "\t \t \t     " + player1score + "-" + player2score + "\n   Player 2 wins!";
         end();
     }
     // #6 - Now do some clean up
     //get rid of dead bullets
     bullets = bullets.filter(b=>b.isAlive);
+    
+    //powerup
 }
 
 function end() {

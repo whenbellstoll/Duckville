@@ -58,7 +58,8 @@ class Bullet extends PIXI.Graphics {
         if (this.playernum == 1) {
             this.directionB = directionplayer1;
         }
-        if (this.playernum == 2) {
+        if (this.playernum == 2) 
+        {
             this.directionB = directionplayer2;
         }
         
@@ -103,3 +104,44 @@ class Bullet extends PIXI.Graphics {
         }
     }
 }
+
+class SpeedUp extends PIXI.Sprite {
+        constructor(x = 0, y = 0, speed = 1) {
+        super(PIXI.loader.resources["images/speedUp.png"].texture);
+        this.anchor.set(.5, .5);
+        this.x = x;
+        this.y = y;
+        this.speed = speed;
+        this.timer = 3;
+    }
+}
+
+class TripleShot extends PIXI.Sprite {
+        constructor(x = 0, y = 0) {
+        super(PIXI.loader.resources["images/speedUp.png"].texture);
+        this.anchor.set(.5, .5);
+        this.x = x;
+        this.y = y;
+        this.speed = speed;
+        this.timer = 5;
+    }
+    
+    timeDec(dt = 1/60)
+    {
+        this.timer -= dt;   
+    }
+}
+
+class Background extends PIXI.Sprite {
+    constructor(x = 0, y = 0) {
+        super(PIXI.loader.resources["images/oceanman.png"].texture);
+        this.anchor.set(0, 0);
+        this.x = x;
+        this.y = y;
+    }
+   timeDec(dt = 1/60)
+    {
+        this.timer -= dt;   
+    }
+}
+
