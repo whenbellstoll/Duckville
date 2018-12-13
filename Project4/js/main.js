@@ -6,9 +6,38 @@ document.body.appendChild(app.view);
 //constants
 const sceneWidth = app.view.width;
 const sceneHeight = app.view.height;
+let player1score = 0;
+let player2score = 0;
+
+//Powerup constants
+let player1timer = 0;
+let player2timer = 0;
+let player2SpeedUp = false;
+let player1SpeedUp = false;
+let player1TripleShot =false;
+let player2TripleShot = false;
+
+//look at the local storage and make sure our items are defined.
+if (localStorage.getItem("Player1Wins") === null) 
+{
+    localStorage.setItem("Player1Wins", "0");
+}
+else
+{
+    player1score = parseInt(localStorage.getItem("Player1Wins"), 10);
+}
+
+if(localStorage.getItem("Player2Wins") === null)
+{
+    localStorage.setItem("Player2Wins", "0");        
+}
+else
+{
+    player2score = parseInt(localStorage.getItem("Player2Wins"), 10);
+}
 
 //preload images
-PIXI.loader.add(["images/Spaceship.png", "images/explosions.png"]).on("progress", e => {
+PIXI.loader.add(["images/Spaceship.png", "images/explosions.png", "images/speedUp.png", "images/tripleShot.png"]).on("progress", e => {
     console.log(`progress=${e.progress}`)
 }).load(setup);
 
@@ -29,6 +58,7 @@ let score = 0;
 let life = 100;
 let levelNum = 1;
 let paused = true;
+let player1fireReady = true;
 let player2fireReady = true;
 let winningPlayer = "";
 let gameOverText;
@@ -80,8 +110,6 @@ function setup() {
     // #8 - Start update loop
     app.ticker.add(gameLoop);
 
-    // #9 - Start listening for click events on the canvas
-    app.view.onclick = fireBullet;
 
     // Now our `startScene` is visible
     // Clicking the button calls startGame()
@@ -102,7 +130,8 @@ const keyboard = Object.freeze({
     Z: 90,
     Q: 81,
     C: 67,
-    K: 75
+    K: 75,
+    ENTER: 13
 });
 const keys = [];
 window.onkeyup = (e) => {
@@ -111,6 +140,10 @@ window.onkeyup = (e) => {
     if( !keys[32] )
     {
             player2fireReady = true;
+    }
+    if( !keys[13] )
+    {
+           player1fireReady = true;         
     }
     e.preventDefault();
 };
@@ -277,6 +310,8 @@ function Player1Move() {
     }
     ship.x += xdir * ship.speed;
     ship.y += ydir * ship.speed;
+    ship.x = clamp(ship.x, 0, sceneWidth);
+    ship.y = clamp(ship.y, 0, sceneHeight);
 }
 
 function Player2Move() {
@@ -301,6 +336,8 @@ function Player2Move() {
     }
     player2.x += xdir * player2.speed;
     player2.y += ydir * player2.speed;
+    player2.x = clamp(player2.x, 0, sceneWidth);
+    player2.y = clamp(player2.y, 0, sceneHeight);
 }
 
 function gameLoop() {
@@ -313,7 +350,13 @@ function gameLoop() {
     // #2 - Move Players
     Player1Move();
     Player2Move();
-    //Look for bullets  
+    //Look for bullets 
+    fireBullet();
+    if(keys[13] && player1fireReady)
+    {
+        player1fireReady = false;        
+    }
+    
     fireBullet2();
     if(keys[32] && player2fireReady)
     {
@@ -352,16 +395,28 @@ function gameLoop() {
         }
     player1healthText();
     player2healthText();
+    if( keys[69] )
+        {
+            player1score = 0;
+            player2score = 0;
+        }
     if( player2.health <= 0)
     {
-        winningPlayer= "Game Over!\n      Player 1 wins!";
-         end();  
+        
+        player1score += 1;
+        localStorage.setItem("Player1Wins", player1score);
+        winningPlayer = "    " + player1score + "-" + player2score + "\n   Player 1 wins!";
+        end();
+        
     }
     if( ship.health <= 0 )
-        {
-           winningPlayer = "Game Over!\n      Player 2 wins!";
-            end();
-        }
+    {
+        
+        player2score += 1;
+        localStorage.setItem("Player2Wins", player2score);
+        winningPlayer = "    " + player1score + "-" + player2score + "\n      Player 2 wins!";
+        end();
+    }
     // #6 - Now do some clean up
     //get rid of dead bullets
     bullets = bullets.filter(b=>b.isAlive);
@@ -385,22 +440,16 @@ function end() {
 }
 
 function fireBullet(e) {
-    //
-    if (paused) return;
-
-    let b = new Bullet(0xFFFFFF, ship.x, ship.y, 1);
-    bullets.push(b);
-    gameScene.addChild(b);
-    shootSound.play();
-
-    //Triple shot logic
-    if (levelNum > 1) {
-        let c = new Bullet(0xFFFFFF, ship.x - 15, ship.y, 1);
-        bullets.push(c);
-        gameScene.addChild(c);
-        let d = new Bullet(0xFFFFFF, ship.x + 15, ship.y, 1);
-        bullets.push(d);
-        gameScene.addChild(d);
+    if (keys[13]) {
+        if (paused) return;
+        if( player1fireReady)
+            {
+            let b = new Bullet(0xFFFFFF, ship.x, ship.y, 1);
+            bullets.push(b);
+            gameScene.addChild(b);
+            shootSound.play();
+            }
+        
     }
 }
 
