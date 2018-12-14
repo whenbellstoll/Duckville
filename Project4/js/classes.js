@@ -109,6 +109,7 @@ class Bullet extends PIXI.Graphics {
         if( this.x < 0 || this.x > sceneWidth || this.y < 0 || this.y > sceneHeight )
             {
                 this.isAlive = false;
+                gameScene.removeChild(this);
             }
     }
 }

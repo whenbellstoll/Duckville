@@ -604,16 +604,16 @@ function fireBullet2() {
             shootSound.play();
             if (player2TripleShot) {
                 if (directionplayer2 == "up" || directionplayer2 == "down") {
-                    let b2 = new Bullet(0xFFFFFF, player2.x + 10, player2.y, 1);
-                    let b3 = new Bullet(0xFFFFFF, player2.x - 10, player2.y, 1);
+                    let b2 = new Bullet(0xFFFFFF, player2.x + 10, player2.y, 2);
+                    let b3 = new Bullet(0xFFFFFF, player2.x - 10, player2.y, 2);
                     bullets.push(b2);
                     gameScene.addChild(b2);
                     bullets.push(b3);
                     gameScene.addChild(b3);
                 }
                 if (directionplayer2 == "left" || directionplayer2 == "right") {
-                    let b2 = new Bullet(0xFFFFFF, player2.x, player2.y + 10, 1);
-                    let b3 = new Bullet(0xFFFFFF, player2.x, player2.y - 10, 1);
+                    let b2 = new Bullet(0xFFFFFF, player2.x, player2.y + 10, 2);
+                    let b3 = new Bullet(0xFFFFFF, player2.x, player2.y - 10, 2);
                     bullets.push(b2);
                     gameScene.addChild(b2);
                     bullets.push(b3);
