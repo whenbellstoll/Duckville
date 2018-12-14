@@ -14,25 +14,19 @@ let player1timer = 0;
 let player2timer = 0;
 let player2SpeedUp = false;
 let player1SpeedUp = false;
-let player1TripleShot =false;
+let player1TripleShot = false;
 let player2TripleShot = false;
 
 //look at the local storage and make sure our items are defined.
-if (localStorage.getItem("Player1Wins") === null) 
-{
+if (localStorage.getItem("Player1Wins") === null) {
     localStorage.setItem("Player1Wins", "0");
-}
-else
-{
+} else {
     player1score = parseInt(localStorage.getItem("Player1Wins"), 10);
 }
 
-if(localStorage.getItem("Player2Wins") === null)
-{
-    localStorage.setItem("Player2Wins", "0");        
-}
-else
-{
+if (localStorage.getItem("Player2Wins") === null) {
+    localStorage.setItem("Player2Wins", "0");
+} else {
     player2score = parseInt(localStorage.getItem("Player2Wins"), 10);
 }
 
@@ -54,6 +48,8 @@ let background;
 
 let circles = [];
 let bullets = [];
+let speedup = [];
+let triple = [];
 let aliens = [];
 let explosions = [];
 let explosionTextures;
@@ -88,7 +84,7 @@ function setup() {
     //create background
     background = new Background(0, 0);
     gameScene.addChild(background);
-    
+
     // #4 - Create labels for all 3 scenes
     createLabelsAndButtons();
 
@@ -98,9 +94,9 @@ function setup() {
 
     player2 = new Player(320, 3, 3);
     gameScene.addChild(player2);
-    
 
-    
+
+
     // #6 - Load Sounds
     shootSound = new Howl({
         src: ['sounds/shoot.wav']
@@ -146,22 +142,20 @@ const keys = [];
 window.onkeyup = (e) => {
     //	console.log("keyup=" + e.keyCode);
     keys[e.keyCode] = false;
-    if( !keys[32] )
-    {
-            player2fireReady = true;
+    if (!keys[32]) {
+        player2fireReady = true;
     }
-    if( !keys[13] )
-    {
-           player1fireReady = true;         
+    if (!keys[13]) {
+        player1fireReady = true;
     }
     e.preventDefault();
 };
 
 window.onkeydown = (e) => {
-    
+
     //	console.log("keydown=" + e.keyCode);
     keys[e.keyCode] = true;
-    
+
     // checking for other keys - ex. 'p' and 'P' for pausing
     var char = String.fromCharCode(e.keyCode);
 };
@@ -234,7 +228,7 @@ function createLabelsAndButtons() {
     health2.x = 5;
     health2.y = 26;
     gameScene.addChild(health2);
-    
+
 
 
     // 3 - set up `gameOverScene`
@@ -260,19 +254,17 @@ function createLabelsAndButtons() {
     playAgainButton.interactive = true;
     playAgainButton.buttonMode = true;
     playAgainButton.on("pointerup", startGame); // startGame is a function reference
-    playAgainButton.on('pointerover', e => e.target.alpha = 0.7); 
-    playAgainButton.on('pointerout', e => e.currentTarget.alpha = 1.0); 
+    playAgainButton.on('pointerover', e => e.target.alpha = 0.7);
+    playAgainButton.on('pointerout', e => e.currentTarget.alpha = 1.0);
     gameOverScene.addChild(playAgainButton);
 
 }
 
-function player1healthText()
-{
+function player1healthText() {
     health1.text = `Player 1 Health: ${ship.health}`
 }
 
-function player2healthText()
-{
+function player2healthText() {
     health2.text = `Player 2 Health: ${player2.health}`
 }
 
@@ -319,16 +311,16 @@ function Player1Move() {
     }
     ship.x += xdir * ship.speed;
     ship.y += ydir * ship.speed;
-    if(ship.x > sceneWidth) {
+    if (ship.x > sceneWidth) {
         ship.x = 0;
     }
-    if(ship.y > sceneHeight) {
+    if (ship.y > sceneHeight) {
         ship.y = 0;
     }
-    if(ship.x < 0) {
+    if (ship.x < 0) {
         ship.x = sceneWidth;
     }
-    if(ship.y < 0) {
+    if (ship.y < 0) {
         ship.y = sceneHeight;
     }
     //ship.x = clamp(ship.x, 0, sceneWidth);
@@ -357,16 +349,16 @@ function Player2Move() {
     }
     player2.x += xdir * player2.speed;
     player2.y += ydir * player2.speed;
-    if(player2.x > sceneWidth) {
+    if (player2.x > sceneWidth) {
         player2.x = 0;
     }
-    if(player2.y > sceneHeight) {
+    if (player2.y > sceneHeight) {
         player2.y = 0;
     }
-    if(player2.x < 0) {
+    if (player2.x < 0) {
         player2.x = sceneWidth;
     }
-    if(player2.y < 0) {
+    if (player2.y < 0) {
         player2.y = sceneHeight;
     }
     //player2.x = clamp(player2.x, 0, sceneWidth);
@@ -385,15 +377,13 @@ function gameLoop() {
     Player2Move();
     //Look for bullets 
     fireBullet();
-    if(keys[13] && player1fireReady)
-    {
-        player1fireReady = false;        
+    if (keys[13] && player1fireReady) {
+        player1fireReady = false;
     }
-    
+
     fireBullet2();
-    if(keys[32] && player2fireReady)
-    {
-            player2fireReady =false;
+    if (keys[32] && player2fireReady) {
+        player2fireReady = false;
     }
 
     // #4 - Move Bullets
@@ -403,58 +393,156 @@ function gameLoop() {
 
     // #5 - Check for Collisions
 
-        for (let b of bullets) {
-            //bullets and players
-            if (rectsIntersect(b, ship)) 
-            {
-                if(b.playernum == 2)
-                {
-                    ship.health -= 1;
-                    b.isAlive = false;
-                    gameScene.removeChild(b);
-                    hitSound.play();
-                }
-            }
-            if( rectsIntersect(b, player2))
-            {
-                if(b.playernum == 1)
-                {
-                    player2.health -= 1;
-                    b.isAlive = false;
-                    gameScene.removeChild(b);
-                    hitSound.play();
-                }
+    for (let b of bullets) {
+        //bullets and players
+        if (rectsIntersect(b, ship)) {
+            if (b.playernum == 2) {
+                ship.health -= 1;
+                b.isAlive = false;
+                gameScene.removeChild(b);
+                hitSound.play();
             }
         }
+        if (rectsIntersect(b, player2)) {
+            if (b.playernum == 1) {
+                player2.health -= 1;
+                b.isAlive = false;
+                gameScene.removeChild(b);
+                hitSound.play();
+            }
+        }
+        b.boundsOut();
+    }
+
+    for (let s of speedup) {
+        if (rectsIntersect(s, ship)) {
+            if (!player1SpeedUp) {
+                player1timer = 5;
+                ship.speed += s.speed;
+                player1SpeedUp = true;
+            } else //player recently grabbed the power up
+            {
+                player1timer = 5;
+            }
+            this.isAlive = false;
+            gameScene.removeChild(s);
+        }
+        if (rectsIntersect(s, player2)) {
+            if (!player2SpeedUp) {
+                player2timer = 5;
+                player2.speed += s.speed;
+                player2SpeedUp = true;
+            } else //player recently grabbed the power up
+            {
+                player2timer = 5;
+            }
+            this.isAlive = false;
+            gameScene.removeChild(s);
+        }
+        s.timeDec(dt);
+        if (s.timer <= 0) {
+            this.isAlive = false;
+            gameScene.removeChild(s);
+        }
+    }
+
+    for (let s of triple) {
+        if (rectsIntersect(s, ship)) {
+            if (!player1TripleShot) {
+                player1timer = 5;
+                player1TripleShot = true;
+            } else //player recently grabbed the power up
+            {
+                player1timer = 5;
+            }
+            this.isAlive = false;
+            gameScene.removeChild(s);
+        }
+        if (rectsIntersect(s, player2)) {
+            if (!player2TripleShot) {
+                player2timer = 5;
+                player2TripleShot = true;
+            } else //player recently grabbed the power up
+            {
+                player2timer = 5;
+            }
+            this.isAlive = false;
+            gameScene.removeChild(s);
+        }
+        s.timeDec(dt);
+        if (s.timer <= 0) {
+            this.isAlive = false;
+            gameScene.removeChild(s);
+        }
+    }
+    player1timer -= dt;
+
+    player2timer -= dt;
+    if (player1timer <= 0) {
+        if (player1SpeedUp) {
+            ship.speed -= 2;
+            player1SpeedUp = false;
+        }
+        if (player1TripleShot) {
+            player1TripleShot = false;
+        }
+
+    }
+    if (player2timer <= 0) {
+        if (player2SpeedUp) {
+            player2.speed -= 2;
+            player2SpeedUp = false;
+        }
+        if (player2TripleShot) {
+            player2TripleShot = false;
+        }
+
+    }
     player1healthText();
     player2healthText();
-    if( keys[69] )
-        {
-            player1score = 0;
-            player2score = 0;
-        }
-    if( player2.health <= 0)
-    {
-        
+    if (keys[69]) {
+        player1score = 0;
+        player2score = 0;
+    }
+    if (player2.health <= 0) {
+
         player1score += 1;
         localStorage.setItem("Player1Wins", player1score);
         winningPlayer = "\t \t \t     " + player1score + "-" + player2score + "\n   Player 1 wins!";
         end();
-        
+
     }
-    if( ship.health <= 0 )
-    {
-        
+    if (ship.health <= 0) {
+
         player2score += 1;
         localStorage.setItem("Player2Wins", player2score);
-        winningPlayer =  "\t \t \t     " + player1score + "-" + player2score + "\n   Player 2 wins!";
+        winningPlayer = "\t \t \t     " + player1score + "-" + player2score + "\n   Player 2 wins!";
         end();
     }
     // #6 - Now do some clean up
     //get rid of dead bullets
-    bullets = bullets.filter(b=>b.isAlive);
-    
+    bullets = bullets.filter(b => b.isAlive);
+
     //powerup
+    let generation = getRandom(0, 300);
+    generation = Math.floor(generation);
+    if ( generation == 193) {
+        let xpos = getRandom(10, sceneWidth - 10);
+        let ypos = getRandom(10, sceneHeight - 10);
+        //Spawn Speed Up
+        let s = new SpeedUp(xpos, ypos, 2);
+        speedup.push(s);
+        gameScene.addChild(s);
+    }
+    if (generation == 230 ) {
+        //Spawn Triple shot
+        let xpos = getRandom(10, sceneWidth - 10);
+        let ypos = getRandom(10, sceneHeight - 10);
+        let t = new TripleShot(xpos, ypos);
+        triple.push(t);
+        gameScene.addChild(t);
+
+    }
 }
 
 function end() {
@@ -468,7 +556,7 @@ function end() {
 
     explosions.forEach(e => gameScene.removeChild(e));
     explosions = [];
-    
+
     gameOverScene.visible = true;
     gameScene.visible = false;
     gameOverText.text = winningPlayer;
@@ -477,28 +565,64 @@ function end() {
 function fireBullet(e) {
     if (keys[13]) {
         if (paused) return;
-        if( player1fireReady)
-            {
+        if (player1fireReady) {
             let b = new Bullet(0xFFFFFF, ship.x, ship.y, 1);
             bullets.push(b);
             gameScene.addChild(b);
             shootSound.play();
+            if (player1TripleShot) {
+                if (directionplayer1 == "up" || directionplayer1 == "down") {
+                    let b2 = new Bullet(0xFFFFFF, ship.x + 10, ship.y, 1);
+                    let b3 = new Bullet(0xFFFFFF, ship.x - 10, ship.y, 1);
+                    bullets.push(b2);
+                    gameScene.addChild(b2);
+                    bullets.push(b3);
+                    gameScene.addChild(b3);
+                }
+                if (directionplayer1 == "left" || directionplayer1 == "right") {
+                    let b2 = new Bullet(0xFFFFFF, ship.x, ship.y + 10, 1);
+                    let b3 = new Bullet(0xFFFFFF, ship.x, ship.y - 10, 1);
+                    bullets.push(b2);
+                    gameScene.addChild(b2);
+                    bullets.push(b3);
+                    gameScene.addChild(b3);
+                }
+
             }
-        
+        }
+
     }
 }
 
 function fireBullet2() {
     if (keys[32]) {
         if (paused) return;
-        if( player2fireReady)
-            {
-               let b = new Bullet(0xFFFFFF, player2.x, player2.y, 2);
+        if (player2fireReady) {
+            let b = new Bullet(0xFFFFFF, player2.x, player2.y, 2);
             bullets.push(b);
             gameScene.addChild(b);
             shootSound.play();
+            if (player2TripleShot) {
+                if (directionplayer2 == "up" || directionplayer2 == "down") {
+                    let b2 = new Bullet(0xFFFFFF, player2.x + 10, player2.y, 1);
+                    let b3 = new Bullet(0xFFFFFF, player2.x - 10, player2.y, 1);
+                    bullets.push(b2);
+                    gameScene.addChild(b2);
+                    bullets.push(b3);
+                    gameScene.addChild(b3);
+                }
+                if (directionplayer2 == "left" || directionplayer2 == "right") {
+                    let b2 = new Bullet(0xFFFFFF, player2.x, player2.y + 10, 1);
+                    let b3 = new Bullet(0xFFFFFF, player2.x, player2.y - 10, 1);
+                    bullets.push(b2);
+                    gameScene.addChild(b2);
+                    bullets.push(b3);
+                    gameScene.addChild(b3);
+                }
+
             }
-        
+        }
+
     }
 
 }

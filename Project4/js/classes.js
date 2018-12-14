@@ -103,6 +103,14 @@ class Bullet extends PIXI.Graphics {
             this.y += -this.fwd.x * this.speed * dt;
         }
     }
+    
+    boundsOut()
+    {
+        if( this.x < 0 || this.x > sceneWidth || this.y < 0 || this.y > sceneHeight )
+            {
+                this.isAlive = false;
+            }
+    }
 }
 
 class SpeedUp extends PIXI.Sprite {
@@ -112,21 +120,26 @@ class SpeedUp extends PIXI.Sprite {
         this.x = x;
         this.y = y;
         this.speed = speed;
+        this.isAlive = true;
         this.timer = 3;
+    }
+       timeDec(dt = 1/60)
+    {
+        this.timer -= dt;   
     }
 }
 
 class TripleShot extends PIXI.Sprite {
         constructor(x = 0, y = 0) {
-        super(PIXI.loader.resources["images/speedUp.png"].texture);
+        super(PIXI.loader.resources["images/tripleShot.png"].texture);
         this.anchor.set(.5, .5);
         this.x = x;
         this.y = y;
-        this.speed = speed;
+        this.isAlive = true;
         this.timer = 5;
     }
     
-    timeDec(dt = 1/60)
+    timeDec( dt = 1/60)
     {
         this.timer -= dt;   
     }
