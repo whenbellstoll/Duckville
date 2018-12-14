@@ -9,6 +9,17 @@ class Player extends PIXI.Sprite {
     }
 }
 
+class Player2 extends PIXI.Sprite {
+    constructor(x = 0, y = 0, speed = 1) {
+        super(PIXI.loader.resources["images/Spaceship2.png"].texture);
+        this.anchor.set(.5, .5);
+        this.x = x;
+        this.y = y;
+        this.speed = speed;
+        this.health = 10;
+    }
+}
+
 class Circle extends PIXI.Graphics {
     constructor(radius, color = 0xFF0000, x = 0, y = 0) {
         super();
@@ -130,6 +141,22 @@ class SpeedUp extends PIXI.Sprite {
     }
 }
 
+class Heal extends PIXI.Sprite {
+        constructor(x = 0, y = 0, speed = 1) {
+        super(PIXI.loader.resources["images/invincibility.png"].texture);
+        this.anchor.set(.5, .5);
+        this.x = x;
+        this.y = y;
+        this.speed = speed;
+        this.isAlive = true;
+        this.timer = 3;
+    }
+       timeDec(dt = 1/60)
+    {
+        this.timer -= dt;   
+    }
+}
+
 class TripleShot extends PIXI.Sprite {
         constructor(x = 0, y = 0) {
         super(PIXI.loader.resources["images/tripleShot.png"].texture);
@@ -149,6 +176,32 @@ class TripleShot extends PIXI.Sprite {
 class Background extends PIXI.Sprite {
     constructor(x = 0, y = 0) {
         super(PIXI.loader.resources["images/oceanman.png"].texture);
+        this.anchor.set(0, 0);
+        this.x = x;
+        this.y = y;
+    }
+   timeDec(dt = 1/60)
+    {
+        this.timer -= dt;   
+    }
+}
+
+class TitleBackground extends PIXI.Sprite {
+    constructor(x = 0, y = 0) {
+        super(PIXI.loader.resources["images/titlebg.png"].texture);
+        this.anchor.set(0, 0);
+        this.x = x;
+        this.y = y;
+    }
+   timeDec(dt = 1/60)
+    {
+        this.timer -= dt;   
+    }
+}
+
+class GameOverBackground extends PIXI.Sprite {
+    constructor(x = 0, y = 0) {
+        super(PIXI.loader.resources["images/gameoverbg.png"].texture);
         this.anchor.set(0, 0);
         this.x = x;
         this.y = y;

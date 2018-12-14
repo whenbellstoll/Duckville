@@ -10,12 +10,18 @@ let player1score = 0;
 let player2score = 0;
 
 //Powerup constants
-let player1timer = 0;
-let player2timer = 0;
+let player1SpeedTimer = 0;
+let player2SpeedTimer = 0;
+let player1HealTimer = 0;
+let player2HealTimer = 0;
+let player1TripleTimer = 0;
+let player2TripleTimer = 0;
 let player2SpeedUp = false;
 let player1SpeedUp = false;
 let player1TripleShot = false;
 let player2TripleShot = false;
+let player1Heal = false;
+let player2Heal = false;
 
 //look at the local storage and make sure our items are defined.
 if (localStorage.getItem("Player1Wins") === null) {
@@ -31,7 +37,7 @@ if (localStorage.getItem("Player2Wins") === null) {
 }
 
 //preload images
-PIXI.loader.add(["images/Spaceship.png", "images/explosions.png", "images/speedUp.png", "images/tripleShot.png", "images/oceanman.png"]).on("progress", e => {
+PIXI.loader.add(["images/Spaceship.png", "images/Spaceship2.png", "images/explosions.png", "images/speedUp.png", "images/tripleShot.png", "images/invincibility.png", "images/oceanman.png", "images/titlebg.png", "images/gameoverbg.png"]).on("progress", e => {
     console.log(`progress=${e.progress}`)
 }).load(setup);
 
@@ -40,16 +46,19 @@ let stage;
 
 //game vaiables
 let startScene;
-let gameScene, ship, player2, health1, health2, shootSound, hitSound, fireballSound;
+let gameScene, ship, player2, health1, health2, shootSound, hitSound, fireballSound, titleSound, gameSound;
 let gameOverScene;
 
 //background
 let background;
+let titleBackground;
+let gameOverBackground;
 
 let circles = [];
 let bullets = [];
 let speedup = [];
 let triple = [];
+let heal = [];
 let aliens = [];
 let explosions = [];
 let explosionTextures;
@@ -84,6 +93,9 @@ function setup() {
     //create background
     background = new Background(0, 0);
     gameScene.addChild(background);
+    titleBackground = new TitleBackground(0,0);
+    gameOverBackground = new GameOverBackground(0,0);
+    gameOverScene.addChild(gameOverBackground);
 
     // #4 - Create labels for all 3 scenes
     createLabelsAndButtons();
@@ -92,7 +104,7 @@ function setup() {
     ship = new Player(320, 3, 3);
     gameScene.addChild(ship);
 
-    player2 = new Player(320, 3, 3);
+    player2 = new Player2(320, 3, 3);
     gameScene.addChild(player2);
 
 
@@ -109,6 +121,17 @@ function setup() {
     fireballSound = new Howl({
         src: ['sounds/fireball.mp3']
     });
+    
+    titleSound = new Howl({
+        src: ['sounds/bonus-ducks.mp3'],
+        autoPlay: true
+    });
+    
+    
+    gameSound = new Howl({
+        src: ['sounds/bckgrndmusic.mp3'],
+        autoPlay: true
+    })
 
     // #7 - Load sprite sheet
     explosionTextures = loadSpriteSheet();
@@ -168,7 +191,8 @@ function createLabelsAndButtons() {
         fontSize: 48,
         fontFamily: "Comic Sans MS"
     });
-
+    
+    startScene.addChild(titleBackground);
     // 1 - set up startScene
     // Make the top start label
     let startLabel1 = new PIXI.Text("DuckFight");
@@ -277,9 +301,12 @@ function startGame() {
     gameScene.visible = true;
     levelNum = 1;
     score = 0;
-    ship.health = 10;
-    player2.health = 10;
-
+    ship.health = 20;
+    player2.health = 20;
+    
+    titleSound.stop();
+    gameSound.play();
+    
     ship.x = 300;
     ship.y = 400;
     player2.x = 400;
@@ -417,24 +444,24 @@ function gameLoop() {
     for (let s of speedup) {
         if (rectsIntersect(s, ship)) {
             if (!player1SpeedUp) {
-                player1timer = 5;
+                player1SpeedTimer = 3;
                 ship.speed += s.speed;
                 player1SpeedUp = true;
             } else //player recently grabbed the power up
             {
-                player1timer = 5;
+                player1SpeedTimer = 3;
             }
             this.isAlive = false;
             gameScene.removeChild(s);
         }
         if (rectsIntersect(s, player2)) {
             if (!player2SpeedUp) {
-                player2timer = 5;
+                player2SpeedTimer = 3;
                 player2.speed += s.speed;
                 player2SpeedUp = true;
             } else //player recently grabbed the power up
             {
-                player2timer = 5;
+                player2SpeedTimer = 3;
             }
             this.isAlive = false;
             gameScene.removeChild(s);
@@ -449,22 +476,22 @@ function gameLoop() {
     for (let s of triple) {
         if (rectsIntersect(s, ship)) {
             if (!player1TripleShot) {
-                player1timer = 5;
+                player1TripleTimer = 3;
                 player1TripleShot = true;
             } else //player recently grabbed the power up
             {
-                player1timer = 5;
+                player1TripleTimer = 3;
             }
             this.isAlive = false;
             gameScene.removeChild(s);
         }
         if (rectsIntersect(s, player2)) {
             if (!player2TripleShot) {
-                player2timer = 5;
+                player2TripleTimer = 3;
                 player2TripleShot = true;
             } else //player recently grabbed the power up
             {
-                player2timer = 5;
+                player2TripleTimer = 3;
             }
             this.isAlive = false;
             gameScene.removeChild(s);
@@ -475,29 +502,80 @@ function gameLoop() {
             gameScene.removeChild(s);
         }
     }
-    player1timer -= dt;
-
-    player2timer -= dt;
-    if (player1timer <= 0) {
+    
+    for (let s of heal) {
+        if (rectsIntersect(s, ship)) {
+            if (!player1Heal) {
+                player1HealTimer = 3;
+                ship.health = 20;
+                player1Heal = true;
+            } else //player recently grabbed the power up
+            {
+                player1Heal = 3;
+            }
+            this.isAlive = false;
+            gameScene.removeChild(s);
+        }
+        if (rectsIntersect(s, player2)) {
+            if (!player2Heal) {
+                player2HealTimer = 3;
+                player2.health = 20;
+                player2Heal = true;
+            } else //player recently grabbed the power up
+            {
+                player2HealTimer = 3;
+            }
+            this.isAlive = false;
+            gameScene.removeChild(s);
+        }
+        s.timeDec(dt);
+        if (s.timer <= 0) {
+            this.isAlive = false;
+            gameScene.removeChild(s);
+        }
+    }
+    
+    player1SpeedTimer -= dt;
+    player1TripleTimer -= dt;
+    player1HealTimer -= dt;
+    
+    player2SpeedTimer -= dt;
+    player2TripleTimer -= dt;
+    player2HealTimer -= dt;
+    
+    if (player1SpeedTimer <= 0) {
         if (player1SpeedUp) {
             ship.speed -= 2;
             player1SpeedUp = false;
         }
+    }
+    if (player1TripleTimer <= 0) {
         if (player1TripleShot) {
             player1TripleShot = false;
         }
-
     }
-    if (player2timer <= 0) {
+    if (player1HealTimer <= 0) {
+        if (player1Heal) {
+            player1Heal = false;
+        }
+    }
+    if (player2SpeedTimer <= 0) {
         if (player2SpeedUp) {
             player2.speed -= 2;
             player2SpeedUp = false;
         }
+    }
+    if (player2TripleTimer <= 0) {
         if (player2TripleShot) {
             player2TripleShot = false;
         }
-
     }
+    if (player2HealTimer <= 0) {
+        if (player2Heal) {
+            player2Heal = false;
+        }
+    }
+    
     player1healthText();
     player2healthText();
     if (keys[69]) {
@@ -508,7 +586,7 @@ function gameLoop() {
 
         player1score += 1;
         localStorage.setItem("Player1Wins", player1score);
-        winningPlayer = "\t \t \t     " + player1score + "-" + player2score + "\n   Player 1 wins!";
+        winningPlayer = "\t \t \t     " + player1score + "-" + player2score + "\n  Blue Duck wins!";
         end();
 
     }
@@ -516,7 +594,7 @@ function gameLoop() {
 
         player2score += 1;
         localStorage.setItem("Player2Wins", player2score);
-        winningPlayer = "\t \t \t     " + player1score + "-" + player2score + "\n   Player 2 wins!";
+        winningPlayer = "\t \t \t     " + player1score + "-" + player2score + "\nYellow Duck wins!";
         end();
     }
     // #6 - Now do some clean up
@@ -524,9 +602,9 @@ function gameLoop() {
     bullets = bullets.filter(b => b.isAlive);
 
     //powerup
-    let generation = getRandom(0, 300);
+    let generation = getRandom(0, 1600);
     generation = Math.floor(generation);
-    if ( generation == 193) {
+    if ( generation == 193 || generation == 194 || generation == 195 || generation == 196) {
         let xpos = getRandom(10, sceneWidth - 10);
         let ypos = getRandom(10, sceneHeight - 10);
         //Spawn Speed Up
@@ -534,12 +612,21 @@ function gameLoop() {
         speedup.push(s);
         gameScene.addChild(s);
     }
-    if (generation == 230 ) {
+    if (generation == 230 || generation == 231 || generation == 232 || generation == 233) {
         //Spawn Triple shot
         let xpos = getRandom(10, sceneWidth - 10);
         let ypos = getRandom(10, sceneHeight - 10);
         let t = new TripleShot(xpos, ypos);
         triple.push(t);
+        gameScene.addChild(t);
+
+    }
+    if (generation == 42 ) {
+        //Spawn Heal
+        let xpos = getRandom(10, sceneWidth - 10);
+        let ypos = getRandom(10, sceneHeight - 10);
+        let t = new Heal(xpos, ypos);
+        heal.push(t);
         gameScene.addChild(t);
 
     }
@@ -550,6 +637,8 @@ function end() {
     //clear out level
     circles.forEach(c => gameScene.removeChild(c));
     circles = [];
+    gameSound.stop();
+    titleSound.play();
 
     bullets.forEach(b => gameScene.removeChild(b));
     bullets = [];
