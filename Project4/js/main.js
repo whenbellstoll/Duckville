@@ -48,11 +48,13 @@ let stage;
 let startScene;
 let gameScene, ship, player2, health1, health2, shootSound, hitSound, fireballSound, titleSound, gameSound;
 let gameOverScene;
+let instructScene;
 
 //background
 let background;
 let titleBackground;
 let gameOverBackground;
+let instructBackground;
 
 let circles = [];
 let bullets = [];
@@ -70,6 +72,8 @@ let player1fireReady = true;
 let player2fireReady = true;
 let winningPlayer = "";
 let gameOverText;
+let instructText;
+let instructTextStyle;
 
 let directions = ["right", "left", "up", "down"];
 let directionplayer1 = "up";
@@ -94,8 +98,14 @@ function setup() {
     background = new Background(0, 0);
     gameScene.addChild(background);
     titleBackground = new TitleBackground(0,0);
+    instructBackground = new TitleBackground(0,0);
     gameOverBackground = new GameOverBackground(0,0);
     gameOverScene.addChild(gameOverBackground);
+    
+    instructScene = new PIXI.Container();
+    instructScene.visible = false;
+    stage.addChild(instructScene);
+    instructScene.addChild(instructBackground);
 
     // #4 - Create labels for all 3 scenes
     createLabelsAndButtons();
@@ -224,7 +234,7 @@ function createLabelsAndButtons() {
     //Make start game button
     let startButton = new PIXI.Text("Start");
     startButton.style = buttonStyle;
-    startButton.x = 250;
+    startButton.x = 50;
     startButton.y = sceneHeight - 100;
     startButton.interactive = true;
     startButton.buttonMode = true;
@@ -232,6 +242,17 @@ function createLabelsAndButtons() {
     startButton.on('pointerover', e => e.target.alpha = 0.7); //concise arrow function
     startButton.on('pointerout', e => e.currentTarget.alpha = 1.0);
     startScene.addChild(startButton);
+    
+    let viewInstructButton = new PIXI.Text("Controls");
+    viewInstructButton.style = buttonStyle;
+    viewInstructButton.x = 350;
+    viewInstructButton.y = sceneHeight - 100;
+    viewInstructButton.interactive = true;
+    viewInstructButton.buttonMode = true;
+    viewInstructButton.on("pointerup", instructSceneStart); //instructSceneStart is a function ref
+    viewInstructButton.on('pointerover', e => e.target.alpha = 0.7); //concise arrow function
+    viewInstructButton.on('pointerout', e => e.currentTarget.alpha = 1.0);
+    startScene.addChild(viewInstructButton);
 
     // set up 'gameScene'
     let textStyle = new PIXI.TextStyle({
@@ -269,6 +290,21 @@ function createLabelsAndButtons() {
     gameOverText.x = 100;
     gameOverText.y = sceneHeight / 2 - 160;
     gameOverScene.addChild(gameOverText);
+    
+    // 3 - set up `instructScene`
+    // 3A - make instructions text
+    instructText = new PIXI.Text("Player 1 use WASD/Space\nPlayer 2 use Arrow Keys/Enter");
+    instructTextStyle = new PIXI.TextStyle({
+        fill: 0xFFFFFF,
+        fontSize: 32,
+        fontFamily: "Futura",
+        stroke: 0xC4B702,
+        strokeThickness: 6
+    });
+    instructText.style = instructTextStyle;
+    instructText.x = 100;
+    instructText.y = sceneHeight / 2 - 160;
+    instructScene.addChild(instructText);
 
     // 3B - make "play again?" button
     let playAgainButton = new PIXI.Text("Fight again?");
@@ -281,7 +317,17 @@ function createLabelsAndButtons() {
     playAgainButton.on('pointerover', e => e.target.alpha = 0.7);
     playAgainButton.on('pointerout', e => e.currentTarget.alpha = 1.0);
     gameOverScene.addChild(playAgainButton);
-
+    
+    let toMenuButton = new PIXI.Text("Fight!");
+    toMenuButton.style = buttonStyle;
+    toMenuButton.x = 200;
+    toMenuButton.y = sceneHeight - 100;
+    toMenuButton.interactive = true;
+    toMenuButton.buttonMode = true;
+    toMenuButton.on("pointerup", startGame); // startGame is a function reference
+    toMenuButton.on('pointerover', e => e.target.alpha = 0.7);
+    toMenuButton.on('pointerout', e => e.currentTarget.alpha = 1.0);
+    instructScene.addChild(toMenuButton);
 }
 
 function player1healthText() {
@@ -298,6 +344,7 @@ function player2healthText() {
 function startGame() {
     startScene.visible = false;
     gameOverScene.visible = false;
+    instructScene.visible = false;
     gameScene.visible = true;
     levelNum = 1;
     score = 0;
@@ -313,6 +360,13 @@ function startGame() {
     player2.y = 300;
     loadLevel();
     // more to come
+}
+
+function instructSceneStart() {
+    startScene.visible = false;
+    gameOverScene.visible = false;
+    instructScene.visible = true;
+    gameScene.visible = false;
 }
 
 
